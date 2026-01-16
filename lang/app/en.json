@@ -1,0 +1,46 @@
+{
+  "menu": {
+    "btn": {
+      "newSimulation": "New Simulation",
+      "loadSimulation": "Load Simulation",
+      "settings": "Settings"
+    },
+    "tooltip": {
+      "newSimulation": "Create a new simulation",
+      "loadSimulation": "Load an existing simulation",
+      "settings": "Open application settings",
+      "language": "Toggle language",
+      "info": "Show application information"
+    },
+    "newSim": {
+      "title": "New Simulation Settings",
+      "newTerrain": "Create New Simulation",
+      "inputLength": "Length",
+      "inputWidth": "Width",
+      "inputMeterPerPx": "Meters per pixel",
+      "loadTerrain": "Load terrain from file",
+      "btnLoadCustomTerrain": "Load custom terrain"
+    }
+  },
+
+  "editor": {
+    "btn": {
+
+    },
+    "tooltip": {
+      "mode": {
+        "terrain": "Terrain editing",
+        "biome": "Biomes editing",
+        "population": "Population editing"
+      },
+      "backToMenu": "Back to main menu"
+    }
+  },
+
+  "buttons": {
+    "languageToggle": "CZ",
+    "ok": "OK",
+    "loadCustom": "Load terrein"
+  }
+
+}

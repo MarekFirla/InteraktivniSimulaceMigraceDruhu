@@ -1,0 +1,20 @@
+{
+  "navbar": {
+    "title": "Interaktivní simulace migrace druhů",
+    "simulation": "Simulace",
+    "guide": "Návod",
+    "download": "Ke stažení"
+  },
+  "section": {
+    "simulation": "Simulace",
+    "guide": "Návod",
+    "download": "Ke stažení"
+  },
+  "buttons": {
+    "startSimulation": "Spustit simulaci"
+  },
+  "text": {
+    "guide": "Place holder",
+    "download": "Place holder"
+  }
+}

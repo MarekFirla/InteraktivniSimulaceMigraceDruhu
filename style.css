@@ -1,0 +1,126 @@
+﻿body {
+    margin: 0;
+    font-family: 'Segoe UI';
+    scroll-behavior: smooth;
+    background: #EFE3C2;
+}
+
+
+/* Horní lišta */
+nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 60px;
+    background: #123524;
+    color: white;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0 30px;
+    z-index: 100;
+    box-sizing: border-box;
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex: 1;
+}
+
+.nav-item {
+    color: #EFE3C2;
+    margin: 0 25px;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+    .nav-item:hover {
+        transform: scale(1.1);
+        color: white;
+    }
+
+/* Pravá část – přepínač jazyka */
+.nav-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 120px; 
+}
+
+#lang-toggle {
+    cursor: pointer;
+    font-size: 18px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: #3E7B27;
+    transition: background 0.3s, transform 0.2s;
+}
+
+    #lang-toggle:hover {
+        background: #85A947;
+        transform: scale(1.1);
+        color: white;
+    }
+
+
+section {
+    padding: 100px 20px;
+    min-height: 100vh;
+    color: black;
+}
+
+#renderCanvas {
+    width: 100%;
+    height: 70vh;
+    border: 1px solid #ccc;
+    background: #000;
+    font-family: "Segoe UI";
+    unicode-bidi: embed;
+}
+
+#canvas-container {
+    position: relative;
+}
+
+#start-simulation {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #3E7B27;
+    color: #EFE3C2;
+    font-size: 20px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    z-index: 10;
+}
+
+    #start-simulation:hover {
+        background: #85A947;
+        transform: translate(-50%, -50%) scale(1.1);
+        color: white;
+    }
+
+
+@media (max-width: 700px) {
+    nav {
+        flex-direction: column;
+        height: auto;
+        padding: 10px;
+    }
+
+    .nav-left {
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 8px;
+    }
+
+    .nav-right {
+        justify-content: center;
+    }
+}
