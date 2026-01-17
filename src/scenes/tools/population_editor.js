@@ -15,13 +15,13 @@ export class PopulationEditor {
         this.selectedSpeciesId = 0;
         this.enabled = false;
         this.ground = null;
-        this.mouseDown = false;
 
         this.sideBar = new ScrollableSidebar();
+        this.speciesButtons = new Map();
 
-        // ===== Bottom bar =====
         this.bottomPanel = new BABYLON.GUI.StackPanel();
         this.bottomPanel.isVertical = false;
+        this.bottomPanel.width = "300px";
         this.bottomPanel.height = "50px";
         this.bottomPanel.left = "140px";
         this.bottomPanel.bottom = "20px";
@@ -29,11 +29,11 @@ export class PopulationEditor {
             BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
         this.bottomPanel.horizontalAlignment =
             BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-
-        this.uiBuilt = false;
+        this.bottomPanel.zIndex = 100;
 
         this._pointerObserver = null;
     }
+
 
     enable() {
         if (this.enabled) return;
@@ -46,7 +46,6 @@ export class PopulationEditor {
         this.gui.addControl(this.bottomPanel);
         this.gui.addControl(this.sideBar.root);
     }
-
 
     disable() {
         if (!this.enabled) return;
@@ -62,29 +61,25 @@ export class PopulationEditor {
     }
 
 
+
     _buildBottomBar() {
-
-        this.addAgentBtn = new ToolBtn(
-            "/assets/icons/place_holder.png",
-            () => this._createAtCursor()
+        const btn = new ToolBtn(
+            "/assets/icons/population_editing.png",
+            () => { }
         );
-
-        this.bottomPanel.addControl(this.addAgentBtn.root);
+        btn.root.zIndex = 101;
+        this.bottomPanel.addControl(btn.root);
     }
 
     _buildSideBar() {
-        // ===== Side bar =====
-
-
         this.sideBar.clear();
-        this.speciesButtons = new Map();
+        this.speciesButtons.clear();
 
         this.speciesRegistry.getAll().forEach(species => {
             const btn = this.sideBar.addToolButton(
-                species.render.icon, 
+                species.render.icon,
                 () => this.selectedSpeciesId = species.id
             );
-
             this.speciesButtons.set(species.id, btn);
         });
     }
@@ -95,42 +90,30 @@ export class PopulationEditor {
             if (!this.enabled) return;
 
             if (
-                pi.type === BABYLON.PointerEventTypes.POINTERDOWN &&
-                pi.event.button === 0
-            ) {
-                this.mouseDown = true;
-                this._createAtCursor();
-            }
+                pi.type !== BABYLON.PointerEventTypes.POINTERDOWN ||
+                pi.event.button !== 0
+            ) return;
 
-            if (pi.type === BABYLON.PointerEventTypes.POINTERUP) {
-                this.mouseDown = false;
-            }
+            if (!pi.pickInfo?.ray) return;
+            const pick = this.scene.pickWithRay(
+                pi.pickInfo.ray,
+                mesh => mesh === this.ground
+            );
+
+            if (!pick?.hit || !pick.pickedPoint) return;
+
+            this._createAtPoint(pick.pickedPoint);
         });
     }
 
     _disableInteraction() {
         if (this._pointerObserver) {
             this.scene.onPointerObservable.remove(this._pointerObserver);
+            this._pointerObserver = null;
         }
-
-        this._pointerObserver = null;
-        this.mouseDown = false;
     }
 
-
-    _createAtCursor() {
-        if (!this.enabled) return;
-
-        const pick = this.scene.pick(
-            this.scene.pointerX,
-            this.scene.pointerY,
-            m => m === this.ground
-        );
-
-        if (!pick.hit) return;
-
-        const p = pick.pickedPoint;
-
+    _createAtPoint(p) {
         const ix = Math.floor(
             (p.x / this.heightMap.length + 0.5) * this.heightMap.res.x
         );
@@ -151,6 +134,7 @@ export class PopulationEditor {
             { x: p.x, y: y + 0.3, z: p.z },
             { ix, iz }
         );
-    }
 
+        this.editor.terrainRenderer.rebuildPopulation();
+    }
 }

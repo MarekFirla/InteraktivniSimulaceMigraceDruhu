@@ -38,8 +38,8 @@ export class TerrainRenderer {
         return BABYLON.MeshBuilder.CreateGround(
             "terrain",
             {
-                width: length,            // X
-                height: width,            // Z
+                width: length,            //osa x
+                height: width,            //osa z
                 subdivisionsX: res.x - 1,
                 subdivisionsY: res.z - 1,
                 updatable: true
@@ -83,7 +83,7 @@ export class TerrainRenderer {
         const biomes = this.biomeRegistry.getAll();
         const layerCount = biomes.length;
 
-        // načteme první texturu kvůli rozměrům
+        // první textura - kvůli rozměrům
         const first = await this._loadImage(biomes[0].texture);
         const width = first.width;
         const height = first.height;
@@ -209,13 +209,32 @@ export class TerrainRenderer {
                 this.scene
             );
 
-            const source = result.meshes.find(m => m instanceof BABYLON.Mesh);
-            source.setEnabled(false);
+            const root = new BABYLON.Mesh(
+                `population_root_${species.id}`,
+                this.scene
+            );
 
-            source.thinInstanceEnablePicking = true;
+            result.meshes.forEach(m => {
+                if (m instanceof BABYLON.Mesh) {
+                    m.parent = root;
+                }
+            });
+
+            root.bakeCurrentTransformIntoVertices();
+
+            root.position.set(0, 0, 0);
+            root.scaling.set(1, 1, 1);
+            root.rotationQuaternion = BABYLON.Quaternion.Identity();
+            root.parent = null;
+
+            root.computeWorldMatrix(true);
+            root.freezeWorldMatrix();
+
+            root.setEnabled(false);
+            root.thinInstanceEnablePicking = false;
 
             this.populationMeshes.set(species.id, {
-                source,
+                source: root,
                 matrices: [],
                 scale: species.render.scale ?? 1,
                 yOffset: species.render.yOffset ?? 0
@@ -223,33 +242,48 @@ export class TerrainRenderer {
         }
     }
 
+
+
     // inicializace population renderingu
     rebuildPopulation() {
-        // reset
+
+        // --------------------------------------------------
+        // 1️⃣ RESET VŠECH THIN INSTANCÍ
+        // --------------------------------------------------
         for (const entry of this.populationMeshes.values()) {
             entry.matrices.length = 0;
             entry.source.thinInstanceSetBuffer("matrix", null);
+            entry.source.setEnabled(false);
         }
 
         this.populationIndex.clear();
 
-        // build matrices
+        // --------------------------------------------------
+        // 2️⃣ SESTAV INSTANCE MATICE Z populationMap
+        // --------------------------------------------------
         for (const entity of this.populationMap.getAll()) {
             const entry = this.populationMeshes.get(entity.species_id);
             if (!entry) continue;
 
-            const m = BABYLON.Matrix.Compose(
-                new BABYLON.Vector3(entry.scale, entry.scale, entry.scale),
+            const scale =
+                entity.scale ??
+                entry.scale ??
+                1;
+
+            const position = new BABYLON.Vector3(
+                entity.position.x,
+                entity.position.y + (entry.yOffset ?? 0),
+                entity.position.z
+            );
+
+            const matrix = BABYLON.Matrix.Compose(
+                new BABYLON.Vector3(scale, scale, scale),
                 BABYLON.Quaternion.Identity(),
-                new BABYLON.Vector3(
-                    entity.position.x,
-                    entity.position.y + entry.yOffset,
-                    entity.position.z
-                )
+                position
             );
 
             const index = entry.matrices.length;
-            entry.matrices.push(m);
+            entry.matrices.push(matrix);
 
             this.populationIndex.set(entity.id, {
                 speciesId: entity.species_id,
@@ -257,19 +291,22 @@ export class TerrainRenderer {
             });
         }
 
-        // upload buffers
         for (const entry of this.populationMeshes.values()) {
-            if (entry.matrices.length === 0) continue;
+            const count = entry.matrices.length;
+            if (count === 0) continue;
 
-            entry.source.thinInstanceSetBuffer(
-                "matrix",
-                entry.matrices.flatMap(m => m.toArray()),
-                16
-            );
+            const buffer = new Float32Array(count * 16);
 
+            for (let i = 0; i < count; i++) {
+                entry.matrices[i].copyToArray(buffer, i * 16);
+            }
+
+            entry.source.thinInstanceSetBuffer("matrix", buffer, 16);
             entry.source.setEnabled(true);
         }
+
     }
+
 
     // aktualizuje pozice populace podle height mapy
     resnapPopulation() {

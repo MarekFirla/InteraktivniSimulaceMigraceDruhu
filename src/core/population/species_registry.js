@@ -12,6 +12,7 @@ export class SpeciesRegistry {
                 mesh: "dandelion.glb",
                 icon: "dandelion.png",
                 radius: 1,
+                scale: 2,
                 speed: 0,
                 energy: 100
             },
@@ -21,6 +22,7 @@ export class SpeciesRegistry {
                 color: "#555555",
                 mesh: "bee.glb",
                 icon: "bee.png",
+                scale: 0.1,
                 radius: 0.5,
                 speed: 1.8,
                 energy: 120,
@@ -35,7 +37,7 @@ export class SpeciesRegistry {
                 color: s.color,
                 render: {
                     mesh: `/assets/mesh/${s.mesh}`,
-                    icon: `/assets/mesh/icons/${s.icon}`,
+                    icon: `/assets/mesh/icon/${s.icon}`,
                     scale: 1,
                     yOffset: 0
                 },
