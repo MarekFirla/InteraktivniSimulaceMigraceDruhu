@@ -1,0 +1,20 @@
+{
+    "navbar": {
+        "title": "Interactive species migration simulation",
+        "simulation": "Simulation",
+        "guide": "Guide",
+        "download": "Download"
+    },
+    "section": {
+        "simulation": "Simulation",
+        "guide": "Guide",
+        "download": "Download"
+    },
+    "buttons": {
+        "startSimulation": "Start simulation"
+    },
+    "text": {
+        "guide": "Place holder",
+        "download": "Place holder"
+    }
+}

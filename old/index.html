@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8" />
+
+    <!-- vypíná cache pak to zakomentuj  -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="no-store" />
+
+    <title>
+        Interactive species migration simulation
+    </title>
+
+    <link rel="stylesheet" href="style.css" />
+
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+    <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+
+
+</head>
+<body>
+    <!--Horní navigační lišta -->
+    <nav id="navbar">
+        <div class="nav-left">
+            <a href="index.html" class="nav-item" data-i18n="navbar.title">
+                Interaktivní simulace migrace druhů
+            </a>
+        </div>
+
+        <div class="nav-right">
+            <a href="#simulace" class="nav-item" data-i18n="navbar.simulation">Simulace</a>
+            <a href="#navod" class="nav-item" data-i18n="navbar.guide">Návod</a>
+            <a href="#download" class="nav-item" data-i18n="navbar.download">Ke stažení</a>
+
+            <span id="lang-toggle">CZ/EN</span>
+        </div>
+    </nav>
+
+    <!--Sekce: Simulace -->
+    <section id="simulace">
+        <h2 data-i18n="section.simulation">Simulace</h2>
+        <div id="canvas-container">
+            <canvas id="renderCanvas"></canvas>
+            <button id="start-simulation" data-i18n="buttons.startSimulation">
+                Spustit simulaci
+            </button>
+        </div>
+    </section>
+
+    <!-- Sekce: Návod -->
+    <section id="navod">
+        <h2 data-i18n="section.guide">Návod</h2>
+        <p data-i18n="text.guide">
+            Zde naleznete podrobný návod k použití simulace.
+        </p>
+    </section>
+
+    <!-- Sekce: Ke stažení -->
+    <section id="download">
+        <h2 data-i18n="section.download">Ke stažení</h2>
+        <p data-i18n="text.download">
+            Zde můžete stáhnout potřebné soubory.
+        </p>
+    </section>
+
+    <script type="module" src="/src/web/main.js"></script>
+</body>
+</html>

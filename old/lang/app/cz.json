@@ -1,0 +1,47 @@
+{
+  "menu": {
+    "btn": {
+      "newSimulation": "Nová simulace",
+      "loadSimulation": "Načíst simulaci",
+      "settings": "Nastavení"
+    },
+    "tooltip": {
+      "newSimulation": "Vytvořit novou simulaci",
+      "loadSimulation": "Načíst existující simulaci",
+      "settings": "Otevřít nastavení aplikace",
+      "language": "Přepnout jazyk",
+      "info": "Zobrazit informace o aplikaci"
+    },
+    "newSim": {
+      "title": "Nastavení nové simulace",
+      "newTerrain": "Vytvořit novou simulaci",
+      "inputLength": "Délka",
+      "inputWidth": "Šířka",
+      "inputMeterPerPx": "Metrů na pixel",
+      "loadTerrain": "Načíst terén ze souboru",
+      "btnLoadCustomTerrain": "Načíst vlastní terén"
+    }
+  },
+
+  "editor": {
+    "btn": {
+
+    },
+    "tooltip": {
+      "mode": {
+        "terrain": "Režim terénu",
+        "biome": "Režim biomu",
+        "population": "Režim populace"
+      },
+      "backToMenu": "Zpět do menu"
+    }
+  },
+
+  "buttons": {
+    "languageToggle": "EN",
+    "ok": "OK",
+    "loadCustom": "Načíst vlastní terén"
+  }
+  
+
+}

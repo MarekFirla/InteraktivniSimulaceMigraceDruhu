@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg1"
+   inkscape:export-filename="place_holder.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   sodipodi:docname="place_holder.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:deskcolor="#505050"
+     inkscape:document-units="mm"
+     inkscape:zoom="5.6088103"
+     inkscape:cx="55.002751"
+     inkscape:cy="50.90206"
+     inkscape:window-width="1920"
+     inkscape:window-height="1001"
+     inkscape:window-x="2391"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <rect
+       x="11.767201"
+       y="21.929784"
+       width="53.487279"
+       height="34.766731"
+       id="rect2" />
+    <rect
+       x="0"
+       y="0"
+       width="136.57085"
+       height="45.99906"
+       id="rect1" />
+  </defs>
+  <g
+     inkscape:label="Vrstva 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       transform="matrix(0.66275049,0,0,0.92336565,-35.271246,0.13806995)"
+       id="text1"
+       style="font-size:12px;line-height:1;font-family:SansSerif;-inkscape-font-specification:SansSerif;text-align:center;white-space:pre;shape-inside:url(#rect1);fill:none;fill-rule:evenodd;stroke:#ff0800;stroke-width:1.13386;stroke-dasharray:none;stroke-opacity:1"><tspan
+         x="52.716797"
+         y="9.4479638"
+         id="tspan3">Place</tspan></text>
+    <text
+       xml:space="preserve"
+       transform="matrix(0.66275049,0,0,0.92336565,-12.819926,-10.477864)"
+       id="text2"
+       style="font-size:12px;line-height:1;font-family:SansSerif;-inkscape-font-specification:SansSerif;text-align:center;white-space:pre;shape-inside:url(#rect2);fill:none;fill-rule:evenodd;stroke:#ff0800;stroke-width:1.13386;stroke-dasharray:none;stroke-opacity:1"><tspan
+         x="18.84082"
+         y="31.377651"
+         id="tspan4">Holder</tspan></text>
+  </g>
+</svg>
