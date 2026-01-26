@@ -1,5 +1,7 @@
-﻿import vertex from "./shaders/biome.vertex.glsl?raw";
-import fragment from "./shaders/biome.fragment.glsl?raw";;
+import { loadShader } from "../utils/load_shader.js";
+
+//import vertex from "./shaders/biome.vertex.glsl?raw";
+//import fragment from "./shaders/biome.fragment.glsl?raw";;
 import { ContourLine } from "./utility/contour_line.js";
 
 
@@ -20,8 +22,6 @@ export class TerrainRenderer {
         // entity_id → instanceIndex
         this.populationIndex = new Map();
 
-        BABYLON.Effect.ShadersStore["biomeVertexShader"] = vertex;
-        BABYLON.Effect.ShadersStore["biomeFragmentShader"] = fragment;
 
         this.contourLine = new ContourLine(scene, heightMap);
 
@@ -319,12 +319,20 @@ export class TerrainRenderer {
 
         this.rebuildPopulation();
     }
+async _loadBiomeShaders() {
+    const vertex = await loadShader("/shaders/biome.vertex.glsl");
+    const fragment = await loadShader("/shaders/biome.fragment.glsl");
 
+    BABYLON.Effect.ShadersStore["biomeVertexShader"] = vertex;
+    BABYLON.Effect.ShadersStore["biomeFragmentShader"] = fragment;
+}
     async init() {
         const caps = this.scene.getEngine().getCaps();
         if (!caps.texture2DArrayMaxLayerCount) {
             throw new Error("Texture2DArray not supported");
         }
+
+        await this._loadBiomeShaders();  
 
         await this._createBiomeTextureArray();
         this._createBiomeIdTexture();
@@ -397,3 +405,4 @@ export class TerrainRenderer {
 
 
 }
+
