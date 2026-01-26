@@ -1,4 +1,6 @@
-﻿import { LanguageManager } from "./language_manager.js";
+const BABYLON = window.BABYLON;
+
+import { LanguageManager } from "./language_manager.js";
 import { MainMenuScene } from "../scenes/main_menu.js";
 import { EditorScene } from "../scenes/editor.js";
 
@@ -49,3 +51,4 @@ export class SceneManager {
         this.scene = this.simulation.babylonScene;
     }
 }
+
