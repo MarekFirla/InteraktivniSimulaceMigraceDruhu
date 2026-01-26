@@ -1,4 +1,4 @@
-import { loadShader } from "../utils/load_shader.js";
+import { loadShader } from "./utils/load_shader.js";
 
 //import vertex from "./shaders/biome.vertex.glsl?raw";
 //import fragment from "./shaders/biome.fragment.glsl?raw";;
@@ -405,4 +405,5 @@ async _loadBiomeShaders() {
 
 
 }
+
 
