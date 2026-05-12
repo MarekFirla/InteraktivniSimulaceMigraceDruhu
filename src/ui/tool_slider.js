@@ -1,7 +1,7 @@
 import { UIColors } from "./utility/ui_colors.js";
 import { UIComponent } from "./utility/ui_component.js";
 export class ToolSlider extends UIComponent {
-    constructor(minIconPath, maxIconPath, min, max, initialValue, callback, toolip) {
+    constructor(min, max, initialValue, callback, minIconPath, maxIconPath, toolip) {
         const root = new BABYLON.GUI.Container();
         root.width = "220px";
         root.height = "60px";

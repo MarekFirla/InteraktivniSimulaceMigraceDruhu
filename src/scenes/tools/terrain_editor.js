@@ -14,7 +14,6 @@ export class TerrainEditor {
         this.brushStrength = 1;   // meters per stroke
         this.mode = "raise";
         this.mouseDown = false;
-
         this.enabled = false;
 
         // ===== GUI =====
@@ -86,22 +85,22 @@ export class TerrainEditor {
         this.buttonPanel.addControl(this.lowerBtn.root);
 
         const brushSizeSlider = new ToolSlider(
-            "/assets/icons/small_brush.png",
-            "/assets/icons/big_brush.png",
             5,
             100,
             this.brushSize,
-            v => this.brushSize = v
+            v => this.brushSize = v,
+            "/assets/icons/small_brush.png",
+            "/assets/icons/big_brush.png",
         );
         this.sliderPanel.addControl(brushSizeSlider.root);
 
         const brushStrengthSlider = new ToolSlider(
-            "/assets/icons/weak_brush.png",
-            "/assets/icons/strong_brush.png",
             0.1,
             5,
             this.brushStrength,
-            v => this.brushStrength = v
+            v => this.brushStrength = v,
+            "/assets/icons/weak_brush.png",
+            "/assets/icons/strong_brush.png",
         );
         this.sliderPanel.addControl(brushStrengthSlider.root);
         this.panel.addControl(this.buttonPanel);
@@ -158,7 +157,7 @@ export class TerrainEditor {
     // --------------------------------------------------
 
     _paint() {
-        if (!this.enabled) return; // FIX: safety guard
+        if (!this.enabled) return; 
 
         const pick = this.scene.pick(
             this.scene.pointerX,
@@ -169,7 +168,7 @@ export class TerrainEditor {
         if (!pick.hit) return;
 
         const uv = pick.getTextureCoordinates();
-        if (!uv) return; // FIX: UV guard
+        if (!uv) return; 
 
         const resX = this.heightMap.res.x;
         const resZ = this.heightMap.res.z;
@@ -180,12 +179,12 @@ export class TerrainEditor {
         const metersPerPixel = this.heightMap.metersPerPixel;
         const radiusPx = Math.max(
             1,
-            Math.round(this.brushSize / metersPerPixel)
+            Math.round(this.brushSize / metersPerPixel/ 100)
         );
 
         const sign = this.mode === "raise" ? 1 : -1;
 
-        let changed = false; // FIX: performance guard
+        let changed = false; 
 
         for (let z = cz - radiusPx; z <= cz + radiusPx; z++) {
             for (let x = cx - radiusPx; x <= cx + radiusPx; x++) {
@@ -199,7 +198,7 @@ export class TerrainEditor {
                 if (distPx > radiusPx) continue;
 
                 const falloff = 1 - distPx / radiusPx;
-                const delta = falloff * this.brushStrength * sign;
+                const delta = falloff * this.brushStrength/100 * sign;
 
                 this.heightMap.add(x, z, delta);
                 changed = true;

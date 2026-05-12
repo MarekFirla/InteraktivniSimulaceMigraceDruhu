@@ -5,7 +5,8 @@ import { NewSimulationSettings } from "../ui/popups/new_sim_settings.js";
 import { Tooltip } from "../ui/popups/tooltip.js";
 import { HeightMap } from "../maps/height_map.js";
 import { BiomMap } from "../maps/biom_map.js";
-import { PopulationMap } from "../maps/population_map.js"
+import { PopulationMap } from "../maps/population_map.js";
+import { AssetsRegistry } from "../core/assets_registry.js";
 
 
 export class MainMenuScene {
@@ -103,9 +104,8 @@ export class MainMenuScene {
 
         const newSimulationSettings = new NewSimulationSettings( savedTerrains, (result) => {
             if (result.mode === "new") {
-
-                const metrPerPx = 25;
-                const heightMap = new HeightMap(result.width, result.height, metrPerPx, 0, 100);
+                const heightMap = new HeightMap(result.width, result.height, result.metrPerPx, -10000, 10000);
+                heightMap.setAll(0.841)
                 const biomeMap = new BiomMap(heightMap);
                 biomeMap.setAll(0); // default biome id 0
                 const populationMap = new PopulationMap()
@@ -116,6 +116,9 @@ export class MainMenuScene {
                 this._createSavedTerrain(result.terrain);
             }
         });
+        const heightMap = newSimulationSettings.heightMap;
+        const biomeMap = newSimulationSettings.biomMap;
+        
         this.gui.addControl(newSimulationSettings.root);
     }
 

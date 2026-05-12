@@ -3,9 +3,9 @@ import { BasicLabel } from "./basic_label.js";
 import { UIComponent } from "./utility/ui_component.js";
 export class LabeledInput extends UIComponent {
     #input;
-    constructor(labelTextKey, inputPlaceholderKey = null) {
+    constructor(labelTextKey, inputPlaceholderKey = null, onlyNum = false) {
         const container = new BABYLON.GUI.StackPanel();
-        container.width = "220px";
+        container.width = "100%";
         container.height = "50px";
         container.isVertical = false;
         container.paddingTop = "10px";
@@ -42,6 +42,28 @@ export class LabeledInput extends UIComponent {
             this.#input.text = inputPlaceholderKey.toString();
         }
 
+        if (onlyNum) {
+            this.#input.onTextChangedObservable.add(() => {
+
+                // povolíme pouze èísla a teèku
+                let filtered = this.#input.text.replace(/[^0-9.,]/g, "");
+
+                // jen jedna teèka
+                const parts = filtered.split(".");
+                if (parts.length > 2) {
+                    filtered = parts[0] + "." + parts.slice(1).join("");
+                }
+
+                if (filtered !== this.#input.text) {
+                    this.#input.text = filtered;
+                }
+            });
+        }
+
+    }
+
+    get input() {
+        return this.#input
     }
 
     get value() {

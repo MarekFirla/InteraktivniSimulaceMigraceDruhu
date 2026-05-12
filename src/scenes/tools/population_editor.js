@@ -127,14 +127,18 @@ export class PopulationEditor {
             iz >= this.heightMap.res.z
         ) return;
 
-        const y = this.heightMap.get(ix, iz);
+        const y = this.heightMap.getExactHeightAt(p.x, p.z);
 
         this.populationMap.add(
             this.selectedSpeciesId,
-            { x: p.x, y: y + 0.3, z: p.z },
+            { x: p.x, y: y, z: p.z },
             { ix, iz }
         );
 
+        console.log(p);
+
         this.editor.terrainRenderer.rebuildPopulation();
+
+        
     }
 }

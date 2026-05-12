@@ -1,13 +1,11 @@
-import { loadShader } from "./utility/load_shader.js";
-
-//import vertex from "./shaders/biome.vertex.glsl?raw";
-//import fragment from "./shaders/biome.fragment.glsl?raw";;
+﻿import vertex from "./shaders/biome.vertex.glsl?raw";
+import fragment from "./shaders/biome.fragment.glsl?raw";;
 import { ContourLine } from "./utility/contour_line.js";
 
 
 export class TerrainRenderer {
 
-    constructor(scene, heightMap, biomMap, biomeRegistry,populationMap, speciesRegistry) {
+    constructor(scene, heightMap, biomMap, biomeRegistry, populationMap, speciesRegistry) {
         this.scene = scene;
         this.heightMap = heightMap;
         this.biomMap = biomMap;
@@ -22,11 +20,32 @@ export class TerrainRenderer {
         // entity_id → instanceIndex
         this.populationIndex = new Map();
 
+        BABYLON.Effect.ShadersStore["biomeVertexShader"] = vertex;
+        BABYLON.Effect.ShadersStore["biomeFragmentShader"] = fragment;
 
-        this.contourLine = new ContourLine(scene, heightMap);
+        //this.contourLine = new ContourLine(scene, heightMap);
 
         this.mesh = this._createGround();
         this.applyHeightMap();
+
+        // debug
+        // debug population mesh
+        this.populationDebugMesh = BABYLON.MeshBuilder.CreateSphere(
+            "populationSphere",
+            { diameter: 1 },
+            this.scene
+        );
+
+        const mat = new BABYLON.StandardMaterial("populationMat", this.scene);
+        mat.emissiveColor = BABYLON.Color3.White();
+        mat.disableLighting = true;
+
+        this.populationDebugMesh.material = mat;
+        this.populationDebugMesh.thinInstanceEnablePicking = true;
+        this.populationDebugMesh.alwaysSelectAsActiveMesh = true;
+
+        this.invLength = 1 / this.heightMap.length;
+        this.invWidth = 1 / this.heightMap.width;
 
     }
     //------------------------------------------------------------------------------------------------------------------------------
@@ -73,7 +92,7 @@ export class TerrainRenderer {
 
         this.mesh.refreshBoundingInfo();
 
-        this.contourLine.generate(5);
+        //this.contourLine.generate(50/100);
     }
 
     //------------------------------------------------------------------------------------------------------------------------------
@@ -104,10 +123,16 @@ export class TerrainRenderer {
             layerCount,
             BABYLON.Engine.TEXTUREFORMAT_RGBA,
             this.scene,
-            false,
+            true,
             false,
             BABYLON.Texture.NEAREST_SAMPLINGMODE
         );
+
+        this.biomeTextureArray.anisotropicFilteringLevel = 8;
+
+        // opakování textury pro případ, že by biome textury nebyly přesně rozměrově sladěné s tilingem
+        this.biomeTextureArray.wrapU = BABYLON.Texture.WRAP_ADDRESSMODE;
+        this.biomeTextureArray.wrapV = BABYLON.Texture.WRAP_ADDRESSMODE;
     }
 
     // načte obrázek
@@ -148,6 +173,9 @@ export class TerrainRenderer {
             false,
             BABYLON.Texture.NEAREST_SAMPLINGMODE
         );
+
+        this.biomeIdTexture.wrapU = BABYLON.Texture.CLAMP_ADDRESSMODE;
+        this.biomeIdTexture.wrapV = BABYLON.Texture.CLAMP_ADDRESSMODE;
     }
 
     /// aktualizuje texturu s ID biomů
@@ -163,6 +191,7 @@ export class TerrainRenderer {
 
     // vytvoří shader materiál pro biome rendering
     _createBiomeMaterial() {
+
         this.biomeMaterial = new BABYLON.ShaderMaterial(
             "biomeMat",
             this.scene,
@@ -171,27 +200,34 @@ export class TerrainRenderer {
                 fragment: "biome"
             },
             {
-                attributes: ["position", "uv"],
-                uniforms: ["worldViewProjection"],
+                attributes: ["position", "normal", "uv"],
+                uniforms: [
+                    "world",
+                    "worldViewProjection",
+                    "tileScale",
+                    "contourStep",
+                    "contourThickness",
+                    "contourStrength",
+                    "cameraPosition"
+                ],
                 samplers: ["biomeIdMap", "biomeTextures"]
             }
         );
 
-        this.biomeMaterial.setTexture(
-            "biomeTextures",
-            this.biomeTextureArray
-        );
+        this.biomeMaterial.setTexture("biomeTextures", this.biomeTextureArray);
+        this.biomeMaterial.setTexture("biomeIdMap", this.biomeIdTexture);
 
-        this.biomeMaterial.setTexture(
-            "biomeIdMap",
-            this.biomeIdTexture
-        );
+        //scale textury
+        this.biomeMaterial.setFloat("tileScale", 0.1);
+
+        // nastavení vrstevnic
+        this.biomeMaterial.setFloat("contourStep", 0.1);       // výškový interval
+        this.biomeMaterial.setFloat("contourThickness", 0.01); // tloušťka
+        this.biomeMaterial.setFloat("contourStrength", 1.0);
+        //this.biomeMaterial.setFloat("labelSpacing", 200.0);
 
         this.mesh.material = this.biomeMaterial;
     }
-
-
-
 
     applyBiomeMap() {
         this._updateBiomeIdTexture();
@@ -199,6 +235,7 @@ export class TerrainRenderer {
 
     //------------------------------------------------------------------------------------------------------------------------------
     // population rendering
+
     // načte meshe pro všechny species
     async _loadSpeciesMeshes() {
         for (const species of this.speciesRegistry.getAll()) {
@@ -228,7 +265,7 @@ export class TerrainRenderer {
             root.parent = null;
 
             root.computeWorldMatrix(true);
-            root.freezeWorldMatrix();
+            //root.freezeWorldMatrix();
 
             root.setEnabled(false);
             root.thinInstanceEnablePicking = false;
@@ -247,92 +284,59 @@ export class TerrainRenderer {
     // inicializace population renderingu
     rebuildPopulation() {
 
-        // --------------------------------------------------
-        // 1️⃣ RESET VŠECH THIN INSTANCÍ
-        // --------------------------------------------------
-        for (const entry of this.populationMeshes.values()) {
-            entry.matrices.length = 0;
-            entry.source.thinInstanceSetBuffer("matrix", null);
-            entry.source.setEnabled(false);
+        const entities = this.populationMap.getAll();
+        const count = entities.length;
+
+        if (count === 0) {
+            this.populationDebugMesh.thinInstanceSetBuffer("matrix", null);
+            return;
         }
 
-        this.populationIndex.clear();
+        const buffer = new Float32Array(count * 16);
 
-        // --------------------------------------------------
-        // 2️⃣ SESTAV INSTANCE MATICE Z populationMap
-        // --------------------------------------------------
-        for (const entity of this.populationMap.getAll()) {
-            const entry = this.populationMeshes.get(entity.species_id);
-            if (!entry) continue;
+        for (let i = 0; i < count; i++) {
 
-            const scale =
-                entity.scale ??
-                entry.scale ??
-                1;
-
-            const position = new BABYLON.Vector3(
-                entity.position.x,
-                entity.position.y + (entry.yOffset ?? 0),
-                entity.position.z
-            );
+            const e = entities[i];
 
             const matrix = BABYLON.Matrix.Compose(
-                new BABYLON.Vector3(scale, scale, scale),
+                new BABYLON.Vector3(1, 1, 1),
                 BABYLON.Quaternion.Identity(),
-                position
+                new BABYLON.Vector3(
+                    e.position.x,
+                    e.position.y + 0.55,
+                    e.position.z
+                )
             );
 
-            const index = entry.matrices.length;
-            entry.matrices.push(matrix);
-
-            this.populationIndex.set(entity.id, {
-                speciesId: entity.species_id,
-                index
-            });
+            matrix.copyToArray(buffer, i * 16);
         }
 
-        for (const entry of this.populationMeshes.values()) {
-            const count = entry.matrices.length;
-            if (count === 0) continue;
-
-            const buffer = new Float32Array(count * 16);
-
-            for (let i = 0; i < count; i++) {
-                entry.matrices[i].copyToArray(buffer, i * 16);
-            }
-
-            entry.source.thinInstanceSetBuffer("matrix", buffer, 16);
-            entry.source.setEnabled(true);
-        }
-
+        this.populationDebugMesh.thinInstanceSetBuffer("matrix", buffer, 16);
     }
+
+
 
 
     // aktualizuje pozice populace podle height mapy
     resnapPopulation() {
         for (const entity of this.populationMap.getAll()) {
-            if (!entity.grid) continue;
 
-            const y = this.heightMap.get(entity.grid.ix, entity.grid.iz);
-            entity.position.y = y + 0.3;
+            const y = this.heightMap.getExactHeightAt(
+                entity.position.x,
+                entity.position.z
+            );
+
+            entity.position.y = y;
         }
 
         this.rebuildPopulation();
     }
-async _loadBiomeShaders() {
-    const vertex = await loadShader("/shaders/biome.vertex.glsl");
-    const fragment = await loadShader("/shaders/biome.fragment.glsl");
 
-    BABYLON.Effect.ShadersStore["biomeVertexShader"] = vertex;
-    BABYLON.Effect.ShadersStore["biomeFragmentShader"] = fragment;
-}
     async init() {
         const caps = this.scene.getEngine().getCaps();
         if (!caps.texture2DArrayMaxLayerCount) {
             throw new Error("Texture2DArray not supported");
         }
-
-        await this._loadBiomeShaders();  
 
         await this._createBiomeTextureArray();
         this._createBiomeIdTexture();
@@ -341,6 +345,16 @@ async _loadBiomeShaders() {
 
         await this._loadSpeciesMeshes();
         this.rebuildPopulation();
+
+        // update camera position for shader
+        this.scene.onBeforeRenderObservable.add(() => {
+            if (this.biomeMaterial) {
+                this.biomeMaterial.setVector3(
+                    "cameraPosition",
+                    this.scene.activeCamera.position
+                );
+            }
+        });
     }
 
 
@@ -405,6 +419,3 @@ async _loadBiomeShaders() {
 
 
 }
-
-
-

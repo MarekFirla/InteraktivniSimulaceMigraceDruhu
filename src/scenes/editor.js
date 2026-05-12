@@ -16,20 +16,17 @@ import { TerrainRenderer } from "../render/terrain_renderer.js";
 
 export class EditorScene {
 
-    constructor(engine, canvas, heightMap, biomMap, populationMap) {
+    constructor(engine, canvas, heightMap, biomMap, populationMap, registry) {
         this.engine = engine;
         this.canvas = canvas;
         this.heightMap = heightMap;
         this.biomMap = biomMap;
         this.populationMap = populationMap;
         this.scene = new BABYLON.Scene(engine);
-
         
         // global
         sceneManager.scene = this.scene;
-
         this.gui = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("editorUI");
-
 
         // env
         this._setupEnvironment();

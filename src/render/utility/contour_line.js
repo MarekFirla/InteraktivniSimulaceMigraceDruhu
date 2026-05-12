@@ -7,11 +7,8 @@ export class ContourLine {
         this.mesh = null;
     }
 
-    // ================================
-    // VEØEJNÉ API
-    // ================================
 
-    generate(step = 5) {
+    generate(step = 1) {
 
         if (this.mesh) {
             this.mesh.dispose();
@@ -150,7 +147,7 @@ export class ContourLine {
     _gridToWorld(x, z, h, cellX, cellZ) {
         return new BABYLON.Vector3(
             x * cellX - this.heightMap.length * 0.5,
-            h + 1,
+            h + 0.01,
             this.heightMap.width * 0.5 - z * cellZ
         );
     }

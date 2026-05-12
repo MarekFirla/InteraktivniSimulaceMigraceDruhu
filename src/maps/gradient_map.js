@@ -27,8 +27,8 @@ export class GradientMap {
 
                 //(f´= (f(x+h)-f(x-h))/2h) centrální dif
 
-                const gx = (heigthMap.get(x + 1, z); - heigthMap.get(x - 1, z);) / (2 * this.mpp);
-                const gz = (heigthMap.get(x, z + 1); - heigthMap.get(x, z - 1);) / (2 * this.mpp);
+                const gx = (heigthMap.get(x + 1, z) - heigthMap.get(x - 1, z)) / (2 * this.mpp);
+                const gz = (heigthMap.get(x, z + 1) - heigthMap.get(x, z - 1)) / (2 * this.mpp);
 
                 const i = this._index(x, z);
                 this.gx[i] = gx;

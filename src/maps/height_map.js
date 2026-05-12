@@ -1,6 +1,6 @@
 export class HeightMap {
 
-    constructor(length, width, metersPerPixel, minHeight = 0, maxHeight = 100) {
+    constructor(length, width, metersPerPixel, minHeight = -10000, maxHeight = 10000) {
         this.length = length;          
         this.width = width;             
         this.metersPerPixel = metersPerPixel;
@@ -14,7 +14,7 @@ export class HeightMap {
             metersPerPixel
         );
 
-        this.data = new Float32Array(this.res.x * this.res.z);
+        this.data = new Float16Array(this.res.x * this.res.z);
     }
 
     _mapResolution(length, width, metersPerPixel) {
@@ -40,12 +40,52 @@ export class HeightMap {
         );
     }
 
+    setAll(height) {
+        this.data.fill(height);
+    }
+
     add(x, z, delta) {
         this.set(x, z, this.get(x, z) + delta);
     }
 
     clear(value = 0) {
         this.data.fill(value);
+    }
+
+    // interpolace výšky 
+    getExactHeightAt(x, z) {
+
+        const res = this.resolution;
+
+        const fx = (x / this.length + 0.5) * (res.x - 1);
+        const fz = (0.5 - z / this.width) * (res.z - 1);
+
+        const ix = Math.floor(fx);
+        const iz = Math.floor(fz);
+
+        if (
+            ix < 0 || iz < 0 ||
+            ix >= res.x - 1 ||
+            iz >= res.z - 1
+        ) return 0;
+
+        const tx = fx - ix;
+        const tz = fz - iz;
+
+        const hA = this.get(ix, iz);
+        const hB = this.get(ix + 1, iz);
+        const hC = this.get(ix, iz + 1);
+        const hD = this.get(ix + 1, iz + 1);
+
+        if (tx + tz < 1) {
+            return hA +
+                (hB - hA) * tx +
+                (hC - hA) * tz;
+        }
+
+        return hD +
+            (hC - hD) * (1 - tx) +
+            (hB - hD) * (1 - tz);
     }
 
     get resolution() {

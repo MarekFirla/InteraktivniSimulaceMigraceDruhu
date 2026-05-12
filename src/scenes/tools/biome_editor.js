@@ -67,12 +67,12 @@ export class BiomeEditor {
 
     _buildBottomBar() {
         const brushSizeSlider = new ToolSlider(
-            "/assets/icons/small_brush.png",
-            "/assets/icons/big_brush.png",
             5,
             100,
             this.brushSize,
-            v => this.brushSize = v
+            v => this.brushSize = v,
+            "/assets/icons/small_brush.png",
+            "/assets/icons/big_brush.png",
         );
 
         this.bottomPanel.addControl(brushSizeSlider.root);

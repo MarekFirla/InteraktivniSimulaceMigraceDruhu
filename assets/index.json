@@ -1,0 +1,30 @@
+{
+  "biomes": [
+    {
+      "id": "0",
+      "name": "grass",
+      "path": "/assets/biomes/grass"
+    },
+    {
+      "id": "1",
+      "name": "forest",
+      "path": "/assets/biomes/forest"
+    }
+  ],
+
+  "species": [
+    {
+      "id": "0",
+      "name": "dandelion",
+      "path": "/assets/species/dandelion"
+    }
+  ],
+
+  "terrains": [
+    {
+      "id": "0",
+      "name": "terrain01",
+      "path": "/assets/terrains/terrain01"
+    }
+  ]]
+}

@@ -1,8 +1,9 @@
-const BABYLON = window.BABYLON;
-
-import { LanguageManager } from "./language_manager.js";
+﻿import { LanguageManager } from "./language_manager.js";
 import { MainMenuScene } from "../scenes/main_menu.js";
 import { EditorScene } from "../scenes/editor.js";
+import { AssetsRegistry } from "./assets_registry.js";
+//https://doc.babylonjs.com/communityExtensions/Unity/02_SceneManager/#babylon-scene-manager
+
 
 export class SceneManager {
     constructor(canvas) {
@@ -15,6 +16,8 @@ export class SceneManager {
     async start() {
         this.lang = new LanguageManager("cz");
         await this.lang.loadLocale("cz");
+
+        this.assetsRegistry = new AssetsRegistry();
 
         await this.loadMainMenu();
 
@@ -45,10 +48,13 @@ export class SceneManager {
         this.scene = this.editor.babylonScene;
     }
 
+    async startSimulation(scene, heightMap, biomMap, populatinMap) {
+
+    }
+
     async loadSimulation() {
         if (this.scene) this.scene.dispose();
         this.simulation = new SimulationScene(this.engine, this.canvas);
         this.scene = this.simulation.babylonScene;
     }
 }
-
